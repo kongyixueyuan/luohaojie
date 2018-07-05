@@ -218,19 +218,20 @@ func (blockchain *Blockchain) UnUTXOs(address string,txs []*Transaction) []*UTXO
 
 	var unUTXOs []*UTXO
 
+	//存储txhash:outputIndex下标数组
 	spentTXOutputs := make(map[string][]int)
 
 	//{hash:[0]}
 
 	for _,tx := range txs {
-
+			//是否创世区块
 		if tx.IsCoinbaseTransaction() == false {
 			for _, in := range tx.Vins {
 				//是否能够解锁
 				if in.UnLockWithAddress(address) {
 
 					key := hex.EncodeToString(in.TxHash)
-
+					//把所有未花费的txoutput 追加到map中
 					spentTXOutputs[key] = append(spentTXOutputs[key], in.Vout)
 				}
 
@@ -291,9 +292,6 @@ func (blockchain *Blockchain) UnUTXOs(address string,txs []*Transaction) []*UTXO
 
 		block := blockIterator.Next()
 
-		fmt.Println(block)
-		fmt.Println()
-
 		for i := len(block.Txs) - 1; i >= 0 ; i-- {
 
 			tx := block.Txs[i]
@@ -318,11 +316,6 @@ func (blockchain *Blockchain) UnUTXOs(address string,txs []*Transaction) []*UTXO
 
 				if out.UnLockScriptPubKeyWithAddress(address) {
 
-					fmt.Println(out)
-					fmt.Println(spentTXOutputs)
-
-					//&{2 zhangqiang}
-					//map[]
 
 					if spentTXOutputs != nil {
 
@@ -385,10 +378,12 @@ func (blockchain *Blockchain) FindSpendableUTXOS(from string, amount int,txs []*
 
 	utxos := blockchain.UnUTXOs(from,txs)
 
+//存储txhash:outputIndex下标数组
 	spendableUTXO := make(map[string][]int)
 
 	// 遍历utxos
 
+	//记录金额
 	var value int64
 
 	for _, utxo := range utxos {
@@ -397,12 +392,13 @@ func (blockchain *Blockchain) FindSpendableUTXOS(from string, amount int,txs []*
 
 		hash := hex.EncodeToString(utxo.TxHash)
 		spendableUTXO[hash] = append(spendableUTXO[hash], utxo.Index)
-
+		//迭代++,如果满足转账金额，则跳出循环
 		if value >= int64(amount) {
 			break
 		}
 	}
 
+	//如果迭代完都不够钱，则提示，退出
 	if value < int64(amount) {
 
 		fmt.Printf("%s's fund is not enough\n", from)

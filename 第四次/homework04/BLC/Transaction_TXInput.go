@@ -11,7 +11,7 @@ type TXInput struct {
 
 
 
-// 判断当前的消费是谁的钱
+// 判断当前的消费是谁的钱、ScriptSig是否当前的查询的人
 func (txInput *TXInput) UnLockWithAddress(address string) bool {
 
 	return txInput.ScriptSig == address
