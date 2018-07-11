@@ -33,13 +33,13 @@ type MerkleTree struct {
 
 
 type MerkleNode struct {
-	Left  *MerkleNode
-	Right *MerkleNode
-	Data  []byte
+	LHJ_Left  *MerkleNode
+	LHJ_Right *MerkleNode
+	LHJ_Data  []byte
 }
 
 
-func NewMerkleTree(data [][]byte) *MerkleTree {
+func LHJ_NewMerkleTree(data [][]byte) *MerkleTree {
 
 	//[tx1,tx2,tx3]
 
@@ -52,7 +52,7 @@ func NewMerkleTree(data [][]byte) *MerkleTree {
 
 	// 创建叶子节点
 	for _, datum := range data {
-		node := NewMerkleNode(nil, nil, datum)
+		node := LHJ_NewMerkleNode(nil, nil, datum)
 		nodes = append(nodes, *node)
 	}
 
@@ -70,7 +70,7 @@ func NewMerkleTree(data [][]byte) *MerkleTree {
 		var newLevel []MerkleNode
 
 		for j := 0; j < len(nodes); j += 2 {
-			node := NewMerkleNode(&nodes[j], &nodes[j+1], nil)
+			node := LHJ_NewMerkleNode(&nodes[j], &nodes[j+1], nil)
 			newLevel = append(newLevel, *node)
 		}
 
@@ -96,20 +96,20 @@ func NewMerkleTree(data [][]byte) *MerkleTree {
 }
 
 
-func NewMerkleNode(left, right *MerkleNode, data []byte) *MerkleNode {
+func LHJ_NewMerkleNode(left, right *MerkleNode, data []byte) *MerkleNode {
 	mNode := MerkleNode{}
 
 	if left == nil && right == nil {
 		hash := sha256.Sum256(data)
-		mNode.Data = hash[:]
+		mNode.LHJ_Data = hash[:]
 	} else {
-		prevHashes := append(left.Data, right.Data...)
+		prevHashes := append(left.LHJ_Data, right.LHJ_Data...)
 		hash := sha256.Sum256(prevHashes)
-		mNode.Data = hash[:]
+		mNode.LHJ_Data = hash[:]
 	}
 
-	mNode.Left = left
-	mNode.Right = right
+	mNode.LHJ_Left = left
+	mNode.LHJ_Right = right
 
 	return &mNode
 }
